@@ -1,8 +1,6 @@
-import os
-import sys
 import numpy as np
 
-from env_interface import ReinforcementLearningEnvironment
+from environments.env_interface import ReinforcementLearningEnvironment
 
 
 class Action:

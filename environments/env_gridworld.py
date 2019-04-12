@@ -1,8 +1,11 @@
-import os
-import sys
 import numpy as np
 
-from env_interface import ReinforcementLearningEnvironment
+from environments.env_interface import ReinforcementLearningEnvironment
+
+
+import numpy as np
+
+from environments.env_interface import ReinforcementLearningEnvironment
 
 
 class Action:
@@ -39,13 +42,15 @@ class States:
         self.agents_n = agents_n
         self.dim_x = dim_x
         self.dim_y = dim_y
+        self.current_position = {}
 
         # World Dict maintains collection of worlds with respect to individual agents
         self.world = {}
 
-        for i in range(agents_n):
+        for i in range(agents_n - 1):
             world = np.zeros(shape=(dim_y, dim_x))
             world[0][0] = 1 # Agent being in a position denoted by 1
+            self.current_position[agents_n] = (0, 0)
 
             self.world[i] = world
             # All agents can start from initial position, (0, 0)
@@ -71,12 +76,11 @@ class States:
 
         new_y = position[0] + action[0]
         new_x = position[1] + action[1]
-        print(new_y, " ", new_x)
 
         # Check bound
-        if new_y >= 0 and new_x >= 0 \
-                and new_y < self.dim_x and new_x < self.dim_y:
-            # print("OUTOFBOUND", current_pos, action)
+        if new_y < 0 or new_x < 0 \
+                or new_y > self.dim_x - 1 or new_x > self.dim_y - 1:
+            # print("OUTOFBOUND")
             return True
 
         for key in self.world.keys():
@@ -88,15 +92,16 @@ class States:
         self.world[agent_id][y][x] = 0
         # Update new postion
         self.world[agent_id][new_y][new_x] = 1
+        self.current_position[agent_id] = (new_y, new_x)
 
         return False
 
 
-class Climbing(ReinforcementLearningEnvironment):
+class GridWorld(ReinforcementLearningEnvironment):
     def __init__(self):
         ReinforcementLearningEnvironment.__init__(self)
         self.actions = Action()
-        self.states = States(dim_x=3, dim_y=3, agents_n=2)
+        self.states = States(dim_x=3, dim_y=3, agents_n=1)
         self.observation = Observation()
 
         self.reward = {}
@@ -131,15 +136,27 @@ class Climbing(ReinforcementLearningEnvironment):
         # Bound check for grid world
         if self.is_legitimate_move(action=concrete_action, agent_id=agent_id):
             # Move
+            agent_position = self.states.current_position[agent_id]
+            observation = [agent_position] # Current Position
+
+            reward = self.reward[agent_position[0]][agent_position[1]]
+            reward = reward - 1
+
             val = True
 
         else:
             # Inform that the move hasn't been made
+            agent_position = self.states.current_position[agent_id]
+            observation = [agent_position]
+
+            reward = -1
+
             val = False
 
         # Moving agent has already been done
 
         # Check if the game is complete
+        # There is no completion
 
         return observation, reward, done, val
 
@@ -163,4 +180,11 @@ class Climbing(ReinforcementLearningEnvironment):
 
 
     def __generate_reward_function(self):
-        self.reward = np.array([[]])
+        """
+        Reward function must have a randomness in it for 2, 2 position
+        50% of 0 and 50% of 14 (Paritially Stochastic Games)
+        :return:
+        """
+        self.reward = np.array([[0, 0, 0],
+                                [0, 0, 0],
+                                [0, 0, 1]])

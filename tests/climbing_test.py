@@ -1,4 +1,4 @@
-from env_climbling import *
+from environments.env_climbling import *
 from learner import *
 
 if __name__ == '__main__':
@@ -9,4 +9,6 @@ if __name__ == '__main__':
     for simulation in range(5):
         # Complete one simulation
         for i in range(10):
-            env.step(action=1)
+            observation, reward, done, val = env.step(action=1, agent_id=0)
+
+            print(reward)
