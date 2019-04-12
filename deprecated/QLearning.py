@@ -4,7 +4,7 @@ import numpy as np
 class QLearning:
     epsilon = 0.1
 
-    def __init__(self, state_dim, action_space=None, state_space=None):
+    def __init__(self, state_dim, num_of_actions=0, action_space=None, state_space=None):
         """
         A state space that is 2-dimensional
         A state space that is 1-dimensional
@@ -14,6 +14,10 @@ class QLearning:
         :param state_space:
         :param state_dim: tuple. (1, n) indicates 1-dimension, (n, n) indicates 2.
         """
+
+        self.x_dim_size = state_dim[1]
+        self.y_dim_size = state_dim[0]
+        self.num_of_actions = num_of_actions
 
         if state_dim[0] == 1:
             # 1 Dimension
@@ -27,9 +31,7 @@ class QLearning:
             self.action_space = action_space
             self.state_space = state_space
 
-        self.x_dim_size = state_dim[1]
-        self.y_dim_size = state_dim[0]
-        self.num_of_actions = len(self.action_space)
+
         self.num_of_states = len(self.state_space)
 
         self.q_table = np.zeros(shape=(self.num_of_states, self.num_of_actions))
@@ -45,7 +47,7 @@ class QLearning:
 
         # Update Q-Table
 
-    def take_action(self, epsilon):
+    def get_action(self, epsilon):
         new_action = None
         if self.determine_exploration(epsilon):
             # Explore
@@ -115,13 +117,20 @@ class QLearning:
         """
 
         state_space = np.zeros(shape=(1, x_dim))
-        action_space = [(-1, 0), (0, 0), (1, 0)]
+        # action_space = [(-1, 0), (0, 0), (1, 0)]
+        action_space = []
+        for i in range(self.num_of_actions):
+            action_space.append(i)
 
         return action_space, state_space
 
     def create_2d_state_action_space(self, x_dim, y_dim):
         state_space = np.zeros(shape=(y_dim, x_dim))
-        action_space = [(0, -1), (1, 0), (0, 1), (-1, 0)] # Clockwise starting from North
+        # action_space = [(0, -1), (1, 0), (0, 1), (-1, 0)] # Clockwise starting from North
+
+        action_space = []
+        for i in range(self.num_of_actions):
+            action_space.append(i)
 
         return action_space, state_space
 
