@@ -3,7 +3,7 @@ import sys
 import gym
 from gym import spaces
 
-from QLearning import QLearning
+from learner import Learner
 
 if __name__ == '__main__':
     env = gym.make('CartPole-v1')
@@ -17,12 +17,17 @@ if __name__ == '__main__':
     except:
         pass
 
-    Q = QLearning(state_dim=(num_of_states_0, num_of_states_1))
+    learner = Learner(env.observation_space.high, env.observation_space.low, env.action_space.n)
+
+    # Initial step / Random action
+    sample = env.action_space.sample()
+    observation, reward, done, val = env.step(action=sample)
 
     for epoch in range(100):
-        action = Q.take_action(0.1)
-        print(action)
-        observation, reward, done, val = env.step(action=1)
+        action = learner.get_action(observation)
+        observation, reward, done, val = env.step(action=action)
+
+        learner.update(observation, reward)
 
         if done:
             break
