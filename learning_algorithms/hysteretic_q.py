@@ -1,11 +1,4 @@
-import os
-import sys
-from enum import Enum
 import numpy as np
-import matplotlib.pyplot as plt
-
-from environments.env_interface import ReinforcementLearningEnvironment
-from environments.env_climbling import Climbing
 
 
 class HystereticAgent:
@@ -30,6 +23,7 @@ class HystereticAgent:
         self.steps = 0
         self.total_rewards = 0
         self.done = False
+
 
     def step(self):
         if not self.done:
@@ -82,20 +76,3 @@ class HystereticAgent:
 
     def get_rewards(self):
         return self.rewards
-
-
-if __name__ == "__main__":
-    env = Climbing()
-    agent_1 = HystereticAgent(environment=env, agent_id=0)
-    agent_2 = HystereticAgent(environment=env, agent_id=1)
-
-    for i in range(500):
-        agent_1.step()
-        agent_2.step()
-
-    rewards_1 = agent_1.get_rewards()
-    rewards_2 = agent_2.get_rewards()
-
-    plt.plot(rewards_1)
-    # plt.plot(rewards_2)
-    plt.show()
