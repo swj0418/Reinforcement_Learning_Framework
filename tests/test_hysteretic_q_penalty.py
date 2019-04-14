@@ -4,14 +4,14 @@ testing hysteretic_q learning on the climbing game.
 
 from matplotlib import pyplot as plt
 
-from environments.env_climbling import Climbing
-from learning_algorithms.hysteretic_q import HystereticAgent
+from environments.env_penalty import Penalty
+from learning_algorithms.hysteretic_q_matrix import HystereticAgentMatrix
 
 
 if __name__ == "__main__":
-    env = Climbing()
-    agent_1 = HystereticAgent(environment=env, agent_id=0)
-    agent_2 = HystereticAgent(environment=env, agent_id=1)
+    env = Penalty()
+    agent_1 = HystereticAgentMatrix(environment=env, agent_id=0)
+    agent_2 = HystereticAgentMatrix(environment=env, agent_id=1)
 
     for i in range(500):
         agent_1.step()
