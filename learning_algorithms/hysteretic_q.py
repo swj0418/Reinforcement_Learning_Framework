@@ -64,7 +64,7 @@ class HystereticAgent:
 
             self.total_rewards += reward
             self.steps += 1
-
+            
             self.rewards.append(self.total_rewards / self.steps)
 
     def index_to_actual(self, index):
