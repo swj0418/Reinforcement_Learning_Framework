@@ -32,7 +32,7 @@ class States:
     Default size of a climbing game is 9 (3x3)
     States object also contains all other agents in the environment if there are.
     """
-    def __init__(self, dim_x=3, dim_y=3, agents_n=1):
+    def __init__(self, dim_x=3, dim_y=3, agents_n=2):
         self.n = dim_x * dim_y
         self.agents_n = agents_n
         self.dim_x = dim_x
@@ -43,13 +43,13 @@ class States:
         # World Dict maintains collection of worlds with respect to individual agents
         self.world = {}
 
-        for i in range(agents_n - 1):
+        for i in range(agents_n):
             world = np.zeros(shape=(dim_y, dim_x))
             world[2][0] = 1 # Agent being in a position denoted by 1
 
             # Initial Position
             # All agents can start from initial position, (2, 0)
-            self.current_position[agents_n] = self.default_initial_position
+            self.current_position[i] = self.default_initial_position
 
             self.world[i] = world
 
@@ -82,6 +82,10 @@ class States:
             # print("OUTOFBOUND")
             self.current_position[agent_id] = (y, x)
             return True
+
+        # Update trial. This move does not go out of bound.
+        trial[y][x] = 0
+        trial[new_y][new_x] = 1
 
         for key in self.world.keys():
             if key is not agent_id:
@@ -143,7 +147,6 @@ class Climbing(ReinforcementLearningEnvironment):
             reward = reward - 1
 
             val = True
-
         else:
             # Inform that the move hasn't been made
             agent_position = self.states.current_position[agent_id]
