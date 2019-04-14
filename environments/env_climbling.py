@@ -37,6 +37,7 @@ class States:
         self.agents_n = agents_n
         self.dim_x = dim_x
         self.dim_y = dim_y
+        self.default_initial_position = (2, 0)
         self.current_position = {}
 
         # World Dict maintains collection of worlds with respect to individual agents
@@ -48,7 +49,7 @@ class States:
 
             # Initial Position
             # All agents can start from initial position, (2, 0)
-            self.current_position[agents_n] = (2, 0)
+            self.current_position[agents_n] = self.default_initial_position
 
             self.world[i] = world
 
