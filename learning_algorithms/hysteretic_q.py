@@ -59,23 +59,26 @@ class HystereticAgent:
 
             self.rewards.append(self.total_rewards / self.steps)
 
+
     def index_to_actual(self, index):
         x = index % self.states_dim_y
         y = index // self.states_dim_x
+
 
     def actual_to_index(self, actual):
         index = actual[0] * self.states_dim_x + actual[1]
         return index
 
+
     def get_action(self):
         if np.random.randint(0, 100) / 100 < self.exploration_rate:
             # Explore
             action = np.random.randint(0, self.num_of_action)
-
         else:
             action = np.argmax(self.q_table[self.position_index])
 
         return action
+
 
     def get_rewards(self):
         return self.rewards
