@@ -37,7 +37,7 @@ class HystereticAgent:
             pos_p = self.position_index
 
             # Take action
-            obs, reward, done, val = self.environment.step(action=action, agent_id=self.agent_id)
+            obs, reward, done, valid = self.environment.step(action=action, agent_id=self.agent_id)
             self.position_index = self.actual_to_index(obs[0])
 
             # Update Q-table
