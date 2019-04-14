@@ -8,14 +8,6 @@ from environments.env_interface import ReinforcementLearningEnvironment
 from environments.env_climbling import Climbing
 
 
-class Environments(Enum):
-    climbing = 'climbing'
-    boutilier = 'boutilier'
-    gridworld = 'gridworld'
-    penalty = 'penalty'
-    antworld = 'antworld'
-
-
 class HystereticAgent:
     def __init__(self, environment, agent_id, learning_rate=0.1, discount_factor=0.9, exploration_rate=0.1):
         self.environment = environment
