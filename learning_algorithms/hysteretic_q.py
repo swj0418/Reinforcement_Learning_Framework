@@ -2,14 +2,16 @@ import numpy as np
 
 
 class HystereticAgent:
-    def __init__(self, environment, agent_id, learning_rate=0.1, discount_factor=0.9, exploration_rate=0.1):
+    def __init__(self, environment, agent_id,
+                 learning_rate=0.1, discount_factor=0.9, exploration_rate=0.1,
+                 increasing_learning_rate=0.1, decreasing_learning_rate=0.01):
         self.environment = environment
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
         self.exploration_rate = exploration_rate
         self.agent_id = agent_id
-        self.alpha = 0.3
-        self.beta = 0.7
+        self.increasing_learning_rate = increasing_learning_rate
+        self.decreasing_learning_rate = decreasing_learning_rate
 
         # Setup q_table
         self.num_of_action = self.environment.actions.n
@@ -39,12 +41,12 @@ class HystereticAgent:
             self.position_index = self.actual_to_index(obs[0])
 
             # Update Q-table
-            delta = reward + self.discount_factor * (np.max(self.q_table[self.position_index]) - q_p)
+            bellman_value = reward + self.discount_factor * (np.max(self.q_table[self.position_index]) - q_p)
 
-            if delta >= 0:
-                new_q = q_p + self.alpha * delta
+            if bellman_value >= 0:
+                new_q = q_p + self.increasing_learning_rate * bellman_value
             else:
-                new_q = q_p + self.alpha * delta
+                new_q = q_p + self.decreasing_learning_rate * bellman_value
 
             self.q_table[pos_p][action] = new_q
 
