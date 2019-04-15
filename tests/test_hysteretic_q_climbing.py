@@ -1,6 +1,8 @@
 '''
 testing hysteretic_q learning on the climbing game.
 '''
+import sys
+sys.path.append('../')
 
 from matplotlib import pyplot as plt
 import numpy as np
@@ -14,7 +16,7 @@ def moving_average(a, n=20) :
     ret[n:] = ret[n:] - ret[:-n]
     return ret[n - 1:] / n
 
-if __name__ == "__main__":
+def main():
     env = Climbing()
     learning = HystereticAgentMatrix(environment=env)
 
@@ -32,4 +34,10 @@ if __name__ == "__main__":
     reward_1_moving_average = moving_average(reward_1)
 
     plt.plot(avgrewards_1)
+    plt.ylabel('average_reward')
+    plt.xlabel('episode')
     plt.show()
+
+
+if __name__ == "__main__":
+    main()

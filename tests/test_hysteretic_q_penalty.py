@@ -8,8 +8,7 @@ import numpy as np
 from environments.env_penalty import Penalty
 from learning_algorithms.hysteretic_q_matrix import HystereticAgentMatrix
 
-
-if __name__ == "__main__":
+def main():
     env = Penalty()
     learning = HystereticAgentMatrix(environment=env)
 
@@ -28,3 +27,7 @@ if __name__ == "__main__":
 
     plt.plot(rewards_1)
     plt.show()
+
+
+if __name__ == "__main__":
+    main()
