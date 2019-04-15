@@ -65,7 +65,7 @@ class Antworld:
         self.pheromones = []
 
         self.home_position = (10,10)
-        self.food_position = (15,15)
+        self.food_position = (13,13)
         #right now agents are tuples: x, y, id, carrying
 
         # Sets up a reward function
@@ -122,8 +122,7 @@ class Antworld:
                 elif agent.position == self.food_position:
                     agent.carrying = True
 
-            for reward in rewards:
-                reward += joint_reward #is this by reference?
+            rewards = np.array(rewards) + joint_reward
 
 
         # generate observations
@@ -164,7 +163,7 @@ class Antworld:
         self.pheromones = []
 
         self.home_position = (10,10)
-        self.food_position = (15,15)
+        self.food_position = (13,13)
         return True
 
     def __generate_reward_function(self):
