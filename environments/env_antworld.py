@@ -110,8 +110,10 @@ class Antworld:
         if len(actions) > 0:
             for num in agent_ids:
                 action = actions[num]
-                agent = ants[num]
-                agent.position += self.actions.values[action]
+                agent = self.ants[num]
+                print(self.actions.values[action])
+                print(agent.position)
+                agent.position = tuple(map(sum,zip(self.actions.values[action],agent.position)))
                 if action == 4:
                     self.pheromones += [Pheromone(agent.position)]
                 if agent.carrying and agent.position == self.home_position:
@@ -128,7 +130,6 @@ class Antworld:
         # generate observations
 
         observations = []
-        observation = ''
 
         world = [['.' for _ in range(self.dim_x)] for _ in range(self.dim_y)]
         world = np.array(world)
@@ -144,15 +145,17 @@ class Antworld:
 
 
         for ant in self.ants:
+            observation = ''
             for y in range(ant.position[1]-1,ant.position[1]+2):
                 if y < 0 or y >= self.dim_y:
                     observation += 'EEE'
-                for x in range(ant.position[0]-1,ant.position[0]+2):
-                    if x < 0 or x >= self.dim_x:
-                        observation += 'E'
-                    else:
-                        observation += world[x,y]
-        observations += [observation,]
+                else:
+                    for x in range(ant.position[0]-1,ant.position[0]+2):
+                        if x < 0 or x >= self.dim_x:
+                            observation += 'E'
+                        else:
+                            observation += world[x,y]
+            observations += [observation,]
 
 
         return observations, rewards, done, valid
