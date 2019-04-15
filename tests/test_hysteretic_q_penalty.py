@@ -26,6 +26,9 @@ def main():
     rewards_2 = np.asarray(rewards_2)
 
     plt.plot(rewards_1)
+    plt.title('Penalty game, average reward')
+    plt.xlabel('Episode')
+    plt.ylabel('Average Reward')
     plt.show()
 
 
