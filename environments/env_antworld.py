@@ -111,8 +111,6 @@ class Antworld:
             for num in agent_ids:
                 action = actions[num]
                 agent = self.ants[num]
-                print(self.actions.values[action])
-                print(agent.position)
                 agent.position = tuple(map(sum,zip(self.actions.values[action],agent.position)))
                 if action == 4:
                     self.pheromones += [Pheromone(agent.position)]
