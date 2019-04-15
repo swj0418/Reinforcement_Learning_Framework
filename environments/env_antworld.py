@@ -57,7 +57,10 @@ class Antworld:
         self.reward = {}
         self.max_pheromone_age = 300
 
-        self.ants = [Ant(x) for x in agents_n]
+        self.dim_x = dim_x
+        self.dim_y = dim_y
+
+        self.ants = [Ant(x) for x in range(agents_n)]
         self.pheromones = []
 
         self.home_position = (10,10)
@@ -68,20 +71,21 @@ class Antworld:
         self.__generate_reward_function()
 
     def display(self):
-        worldDisplay = [['.' for _ in self.dim_x] for _ in self.dim_y]
+        worldDisplay = [['.' for x in range(self.dim_x)] for y in range(self.dim_y)]
+        worldDisplay = np.array(worldDisplay)
         worldDisplay[self.home_position] = 'H'
         worldDisplay[self.food_position] = 'F'
 
         for a in self.ants:
-            if a[0] >= 0 and a[0] < self.dim_x and a[1] >= 0 and a[1] < self.dim_y:
-                worldDisplay[a[0],a[1]] = 'a'
+            if a.position[0] >= 0 and a.position[0] < self.dim_x and a.position[1] >= 0 and a.position[1] < self.dim_y:
+                worldDisplay[a.position[0],a.position[1]] = 'a'
         for a in self.pheromones:
-            if a[0] >= 0 and a[0] < self.dim_x and a[1] >= 0 and a[1] < self.dim_y:
-                worldDisplay[a[0],a[1]] = 'p'
+            if a.position[0] >= 0 and a.position[0] < self.dim_x and a.position[1] >= 0 and a.position[1] < self.dim_y:
+                worldDisplay[a.position[0],a.position[1]] = 'p'
 
         out = ''
-        for y in range(dim_y):
-            for x in range(dim_x):
+        for y in range(self.dim_y):
+            for x in range(self.dim_x):
                 out += str(worldDisplay[x,y])
             out += '\n'
         print(out)
@@ -103,22 +107,22 @@ class Antworld:
                 self.pheromones.remove(pheromone)
 
         # move agents and get rewards
+        if len(actions) > 0:
+            for num in agent_ids:
+                action = actions[num]
+                agent = ants[num]
+                agent.position += self.actions.values[action]
+                if action == 4:
+                    self.pheromones += [Pheromone(agent.position)]
+                if agent.carrying and agent.position == self.home_position:
+                    agent.carrying = False
+                    joint_reward += 1
+                    rewards[num] += 1 #give the bringer the best reward
+                elif agent.position == self.food_position:
+                    agent.carrying = True
 
-        for num in agent_ids:
-            action = actions(num)
-            agent = ants(num)
-            agent.position += self.actions.values[action]
-            if action == 4:
-                self.pheromones += [Pheromone(agent.position)]
-            if agent.carrying and agent.position == self.home_position:
-                agent.carrying = False
-                joint_reward += 1
-                rewards[num] += 1 #give the bringer the best reward
-            else if agent.position = self.food_position:
-                agent.carrying = True
-
-        for reward in rewards:
-            reward += joint_reward #is this by reference?
+            for reward in rewards:
+                reward += joint_reward #is this by reference?
 
 
         # generate observations
@@ -126,23 +130,24 @@ class Antworld:
         observations = []
         observation = ''
 
-        world = [['.' for _ in self.dim_x] for _ in self.dim_y]
+        world = [['.' for _ in range(self.dim_x)] for _ in range(self.dim_y)]
+        world = np.array(world)
         world[self.home_position] = 'H'
         world[self.food_position] = 'F'
 
         for a in self.ants:
-            if a[0] >= 0 and a[0] < self.dim_x and a[1] >= 0 and a[1] < self.dim_y:
-                world[a[0],a[1]] = 'a'
+            if a.position[0] >= 0 and a.position[0] < self.dim_x and a.position[1] >= 0 and a.position[1] < self.dim_y:
+                world[a.position[0],a.position[1]] = 'a'
         for a in self.pheromones:
-            if a[0] >= 0 and a[0] < self.dim_x and a[1] >= 0 and a[1] < self.dim_y:
-                world[a[0],a[1]] = 'p'
+            if a.position[0] >= 0 and a.position[0] < self.dim_x and a.position[1] >= 0 and a.position[1] < self.dim_y:
+                world[a.position[0],a.position[1]] = 'p'
 
 
         for ant in self.ants:
-            for y in [ant.position-1:ant.position+2]:
+            for y in range(ant.position[1]-1,ant.position[1]+2):
                 if y < 0 or y >= self.dim_y:
                     observation += 'EEE'
-                for x in [ant.position-1:ant.position+2]:
+                for x in range(ant.position[0]-1,ant.position[0]+2):
                     if x < 0 or x >= self.dim_x:
                         observation += 'E'
                     else:
