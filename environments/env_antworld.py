@@ -39,8 +39,8 @@ class States:
         self.default_initial_position = (10, 10)
 
 class Ant:
-    def __init__(self,my_id):
-        self.position = (10,10)
+    def __init__(self,my_id,position):
+        self.position = position
         self.id = my_id
         self.carrying = False
 
@@ -50,22 +50,22 @@ class Pheromone:
         self.age = 0
 
 class Antworld:
-    def __init__(self,dim_x=10, dim_y=10, agents_n=2):
+    def __init__(self,dim_x=10, dim_y=10, agents_n=2, food=(3,3)):
         self.actions = Action()
         self.states = States(dim_x=dim_x, dim_y=dim_y, agents_n=agents_n)
         self.agents_n = agents_n
         self.observation = Observation()
         self.reward = {}
-        self.max_pheromone_age = 300
+        self.max_pheromone_age = 100
 
         self.dim_x = dim_x
         self.dim_y = dim_y
 
-        self.ants = [Ant(x) for x in range(agents_n)]
+        self.home_position = (dim_x//2,dim_y//2)
+        self.food_position = food
+        self.ants = [Ant(x,self.home_position) for x in range(agents_n)]
         self.pheromones = []
 
-        self.home_position = (5,5)
-        self.food_position = (7,7)
         #right now agents are tuples: x, y, id, carrying
 
         # Sets up a reward function
@@ -90,6 +90,19 @@ class Antworld:
                 out += str(worldDisplay[x,y])
             out += '\n'
         print(out)
+
+    def pheromone_output(self):
+        phero = np.zeros((self.dim_x,self.dim_y))
+        anty = np.zeros((self.dim_x,self.dim_y))
+        for a in self.pheromones:
+            if a.position[0] >= 0 and a.position[0] < self.dim_x and a.position[1] >= 0 and a.position[1] < self.dim_y:
+                phero[a.position[0],a.position[1]] = 1
+
+        for a in self.ants:
+            if a.position[0] >= 0 and a.position[0] < self.dim_x and a.position[1] >= 0 and a.position[1] < self.dim_y:
+                anty[a.position[0],a.position[1]] = 1
+
+        return phero, anty
 
     def step(self, actions, agent_ids):
         observation = None
@@ -140,6 +153,8 @@ class Antworld:
         for a in self.pheromones:
             if a.position[0] >= 0 and a.position[0] < self.dim_x and a.position[1] >= 0 and a.position[1] < self.dim_y:
                 world[a.position[0],a.position[1]] = 'p'
+            else:
+            	a.age = 301
 
 
         for ant in self.ants:
@@ -161,12 +176,12 @@ class Antworld:
 
         return observations, rewards, done, valid
 
-    def reset(self):
-        self.ants = [Ant(x) for x in range(self.agents_n)]
+    def reset(self,food=(3,3)):
+        self.ants = [Ant(x,self.home_position) for x in range(self.agents_n)]
         self.pheromones = []
 
-        self.home_position = (5,5)
-        self.food_position = (7,7)
+        self.food_position = food
+
         return True
 
     def __generate_reward_function(self):
