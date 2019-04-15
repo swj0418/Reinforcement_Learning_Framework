@@ -125,7 +125,12 @@ class Antworld:
             for num in agent_ids:
                 action = actions[num]
                 agent = self.ants[num]
+                prevpos = agent.position
                 agent.position = tuple(map(sum,zip(self.actions.values[action],agent.position)))
+                if agent.position[0] < 0 or agent.position[0] >= self.dim_x:
+                	agent.position = prevpos
+                if agent.position[1] < 0 or agent.position[1] >= self.dim_y:
+                	agent.position = prevpos
                 if action == 4:
                     self.pheromones += [Pheromone(agent.position)]
                 if agent.carrying and agent.position == self.home_position:
@@ -169,7 +174,7 @@ class Antworld:
                         else:
                             if world[x,y] != 'a':
                                 observation += world[x,y]
-                            if ant.carrying:
+                            if ant.carrying and (x,y) == ant.position:
                                 observation += 'c'
             observations += [observation,]
 
