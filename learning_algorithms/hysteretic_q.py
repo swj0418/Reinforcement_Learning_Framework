@@ -3,12 +3,14 @@ import numpy as np
 
 class HystereticAgent:
     def __init__(self, environment, agent_id,
-                 learning_rate=0.1, discount_factor=0.9, exploration_rate=0.1,
+                 learning_rate=0.1, discount_factor=0.9, exploration_rate=1, 
+                 exploration_rate_decay=0.99,
                  increasing_learning_rate=0.1, decreasing_learning_rate=0.01):
         self.environment = environment
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
         self.exploration_rate = exploration_rate
+        self.exploration_rate_decay = exploration_rate_decay
         self.agent_id = agent_id
         self.increasing_learning_rate = increasing_learning_rate
         self.decreasing_learning_rate = decreasing_learning_rate
@@ -18,7 +20,11 @@ class HystereticAgent:
         self.states_dim_x = self.environment.states.dim_x
         self.states_dim_y = self.environment.states.dim_y
 
-        self.q_table = np.zeros(shape=(self.states_dim_x * self.states_dim_y, self.num_of_action))
+        #self.q_table = np.zeros(shape=(self.states_dim_x * self.states_dim_y, self.num_of_action))
+
+        # q_table is a dict of np arrays
+        self.q_table = {}
+
         self.position_index = self.actual_to_index(self.environment.states.default_initial_position)
 
         self.rewards = []
@@ -27,7 +33,7 @@ class HystereticAgent:
         self.done = False
 
 
-    def step(self):
+    def step(self,observation):
         if not self.done:
             # Determine action
             action = self.get_action()
@@ -56,6 +62,30 @@ class HystereticAgent:
             self.rewards.append(self.total_rewards / self.steps)
 
 
+    def q_learn(self, prev_observation, prev_action, current_observation, reward):
+
+        if prev_observation not in self.q_table:
+            self.q_table[prev_observation] = np.array([0 for _ in range(self.num_of_action)])
+
+        if current_observation not in self.q_table:
+            self.q_table[current_observation] = np.array([0 for _ in range(self.num_of_action)])
+
+        q_p = self.q_table[prev_observation][prev_action]
+        pos_p = current_observation
+
+        # Update Q-table
+        bellman_value = reward + self.discount_factor * (np.max(self.q_table[current_observation]) - q_p)
+
+        if bellman_value >= 0:
+            new_q = q_p + self.increasing_learning_rate * bellman_value
+        else:
+            new_q = q_p + self.decreasing_learning_rate * bellman_value
+
+        action = np.argmax(self.q_table[current_observation])
+        self.q_table[pos_p][action] = new_q
+
+
+
     def index_to_actual(self, index):
         x = index % self.states_dim_y
         y = index // self.states_dim_x
@@ -72,6 +102,22 @@ class HystereticAgent:
             action = np.random.randint(0, self.num_of_action)
         else:
             action = np.argmax(self.q_table[self.position_index])
+
+        return action
+
+
+    def get_action_from_observation(self,observation):
+
+        if observation not in self.q_table:
+            self.q_table[observation] = np.array([0 for _ in range(self.num_of_action)])
+            return np.random.choice( range(self.num_of_action) )
+
+        if np.random.random_sample() < self.exploration_rate or np.sum(self.q_table[observation])==0:
+            # Explore
+            action = np.random.randint(0, self.num_of_action)
+        else:
+            action = np.argmax(self.q_table[observation])
+        self.exploration_rate *= self.exploration_rate_decay
 
         return action
 

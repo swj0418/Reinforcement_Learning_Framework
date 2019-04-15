@@ -12,10 +12,10 @@ from learning_algorithms.hysteretic_q import HystereticAgent
 
 if __name__ == '__main__':
     env = Antworld()
-    epochs = 1
+    epochs = 10
     simulations = 1
-    epoch_length = 10
-    num_agents = 2
+    epoch_length = 500
+    num_agents = 5
 
     for simulation in range(simulations):
 
@@ -24,15 +24,21 @@ if __name__ == '__main__':
 
         # get initial observations/rewards
         observations, rewards, _, _ = env.step([],[x for x in range(num_agents)])
-        print(observations)
+        #print(observations)
 
         for epoch in range(epochs):
-            #reset world
+            env.reset()
 
             for time in range(epoch_length):
-                env.display()
                 actions = []
                 for agent_num in range(num_agents):
                     actions += [agents[agent_num].get_action_from_observation(observations[agent_num]),]
 
+                prev_observations = observations
                 observations, rewards, _, _, = env.step(actions,[x for x in range(num_agents)])
+                
+                for agent_num in range(num_agents):
+                    agents[agent_num].q_learn(prev_observations[agent_num],actions[agent_num],observations[agent_num],rewards[agent_num])
+
+            env.display()
+                

@@ -53,6 +53,7 @@ class Antworld:
     def __init__(self,dim_x=20, dim_y=20, agents_n=2):
         self.actions = Action()
         self.states = States(dim_x=dim_x, dim_y=dim_y, agents_n=agents_n)
+        self.agents_n = agents_n
         self.observation = Observation()
         self.reward = {}
         self.max_pheromone_age = 300
@@ -159,6 +160,11 @@ class Antworld:
         return observations, rewards, done, valid
 
     def reset(self):
+        self.ants = [Ant(x) for x in range(self.agents_n)]
+        self.pheromones = []
+
+        self.home_position = (10,10)
+        self.food_position = (15,15)
         return True
 
     def __generate_reward_function(self):
