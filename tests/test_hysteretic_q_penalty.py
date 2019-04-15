@@ -1,8 +1,9 @@
 '''
-testing hysteretic_q learning on the climbing game.
+testing hysteretic_q learning on the penalty game.
 '''
 
 from matplotlib import pyplot as plt
+import numpy as np
 
 from environments.env_penalty import Penalty
 from learning_algorithms.hysteretic_q_matrix import HystereticAgentMatrix
@@ -10,16 +11,20 @@ from learning_algorithms.hysteretic_q_matrix import HystereticAgentMatrix
 
 if __name__ == "__main__":
     env = Penalty()
-    agent_1 = HystereticAgentMatrix(environment=env, agent_id=0)
-    agent_2 = HystereticAgentMatrix(environment=env, agent_id=1)
+    learning = HystereticAgentMatrix(environment=env)
 
-    for i in range(500):
-        agent_1.step()
-        agent_2.step()
+    for i in range(10000):
+        learning.step()
 
-    rewards_1 = agent_1.get_rewards()
-    rewards_2 = agent_2.get_rewards()
+    reward_1, reward_2 = learning.get_rewards()
+
+    """
+    plt.plot(reward_1)
+    plt.show()
+    """
+    rewards_1, rewards_2 = learning.get_averaged_rewards()
+    rewards_1 = np.asarray(rewards_1)
+    rewards_2 = np.asarray(rewards_2)
 
     plt.plot(rewards_1)
-    # plt.plot(rewards_2)
     plt.show()
