@@ -3,7 +3,7 @@ import numpy as np
 
 class HystereticAgent:
     def __init__(self, environment, agent_id,
-                 learning_rate=0.1, discount_factor=0.9, exploration_rate=1, 
+                 learning_rate=0.1, discount_factor=0.99, exploration_rate=1, 
                  exploration_rate_decay=0.99,
                  increasing_learning_rate=0.1, decreasing_learning_rate=0.01):
         self.environment = environment
@@ -71,7 +71,9 @@ class HystereticAgent:
             self.q_table[current_observation] = np.array([0 for _ in range(self.num_of_action)])
 
         q_p = self.q_table[prev_observation][prev_action]
-        pos_p = current_observation
+        pos_p = prev_observation
+
+        #print(prev_observation,current_observation,self.q_table[current_observation])
 
         # Update Q-table
         bellman_value = reward + self.discount_factor * (np.max(self.q_table[current_observation]) - q_p)
@@ -81,8 +83,7 @@ class HystereticAgent:
         else:
             new_q = q_p + self.decreasing_learning_rate * bellman_value
 
-        action = np.argmax(self.q_table[current_observation])
-        self.q_table[pos_p][action] = new_q
+        self.q_table[prev_observation][prev_action] = new_q
 
 
 
