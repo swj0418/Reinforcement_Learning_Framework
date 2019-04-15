@@ -33,7 +33,7 @@ class HystereticAgent:
         self.done = False
 
 
-    def step(self,observation):
+    def step(self):
         if not self.done:
             # Determine action
             action = self.get_action()
@@ -58,7 +58,7 @@ class HystereticAgent:
 
             self.total_rewards += reward
             self.steps += 1
-            
+
             self.rewards.append(self.total_rewards / self.steps)
 
 
