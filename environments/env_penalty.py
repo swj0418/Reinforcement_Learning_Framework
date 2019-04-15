@@ -35,7 +35,7 @@ class States:
         self.agents_n = agents_n
         self.dim_x = dim_x
         self.dim_y = dim_y
-        self.default_initial_position = (0, 0)
+        self.default_initial_position = (1, 1)
 
 class Penalty:
     def __init__(self):
@@ -66,7 +66,8 @@ class Penalty:
         50% of 0 and 50% of 14 (Paritially Stochastic Games)
         :return:
         """
-        self.reward = np.array([[11, -30, 0],
-                                [-30, 14, 6],
-                                [0,   0,  5]])
+        K = -100
+        self.reward = np.array([[10, 0, K],
+                                [0,  2, 0],
+                                [K,  0, 10]])
 
