@@ -3,7 +3,7 @@ import numpy as np
 
 class HystereticAgent:
     def __init__(self, environment, agent_id,
-                 learning_rate=0.1, discount_factor=0.9, exploration_rate=1, 
+                 learning_rate=0.1, discount_factor=0.9, exploration_rate=1,
                  exploration_rate_decay=0.99,
                  increasing_learning_rate=0.1, decreasing_learning_rate=0.01):
         self.environment = environment
@@ -33,7 +33,7 @@ class HystereticAgent:
         self.done = False
 
 
-    def step(self,observation):
+    def step(self):
         if not self.done:
             # Determine action
             action = self.get_action()
@@ -58,7 +58,7 @@ class HystereticAgent:
 
             self.total_rewards += reward
             self.steps += 1
-            
+
             self.rewards.append(self.total_rewards / self.steps)
 
 
