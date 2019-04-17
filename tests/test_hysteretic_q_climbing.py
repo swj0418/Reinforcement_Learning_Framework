@@ -1,9 +1,6 @@
 '''
 testing hysteretic_q learning on the climbing game.
 '''
-import sys
-sys.path.append('../')
-
 from matplotlib import pyplot as plt
 import numpy as np
 
@@ -34,6 +31,7 @@ def main():
     reward_1_moving_average = moving_average(reward_1)
 
     plt.plot(avgrewards_1)
+    plt.title('Climbing game, average reward')
     plt.ylabel('average_reward')
     plt.xlabel('episode')
     plt.show()
