@@ -66,7 +66,7 @@ class Penalty:
         50% of 0 and 50% of 14 (Paritially Stochastic Games)
         :return:
         """
-        K = -100
+        K = -3
         self.reward = np.array([[10, 0, K],
                                 [0,  2, 0],
                                 [K,  0, 10]])

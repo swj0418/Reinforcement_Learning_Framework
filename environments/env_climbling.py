@@ -53,7 +53,14 @@ class Climbing:
         done = False
         val = None
 
-        reward = self.reward[action[0]][action[1]]
+        if np.random.randint(0, 100) < 50:
+            reward = self.reward[action[0]][action[1]]
+        else:
+            if action[0] == 1 and action[1] == 1:
+                reward = 14
+            else:
+                reward = self.reward[action[0]][action[1]]
+
 
         return observation, reward, done, val
 

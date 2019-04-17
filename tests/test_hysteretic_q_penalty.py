@@ -12,7 +12,7 @@ def main():
     env = Penalty()
     learning = HystereticAgentMatrix(environment=env)
 
-    for i in range(10000):
+    for i in range(1000):
         learning.step()
 
     reward_1, reward_2 = learning.get_rewards()
@@ -26,6 +26,9 @@ def main():
     rewards_2 = np.asarray(rewards_2)
 
     plt.plot(rewards_1)
+    plt.title("Penalty Game, K = -3")
+    plt.xlabel("steps")
+    plt.ylabel("average_reward")
     plt.show()
 
 
