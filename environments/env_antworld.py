@@ -68,9 +68,6 @@ class Antworld:
 
         #right now agents are tuples: x, y, id, carrying
 
-        # Sets up a reward function
-        self.__generate_reward_function()
-
     def display(self):
         worldDisplay = [['.' for x in range(self.dim_x)] for y in range(self.dim_y)]
         worldDisplay = np.array(worldDisplay)
@@ -128,9 +125,9 @@ class Antworld:
                 prevpos = agent.position
                 agent.position = tuple(map(sum,zip(self.actions.values[action],agent.position)))
                 if agent.position[0] < 0 or agent.position[0] >= self.dim_x:
-                	agent.position = prevpos
+                    agent.position = prevpos
                 if agent.position[1] < 0 or agent.position[1] >= self.dim_y:
-                	agent.position = prevpos
+                    agent.position = prevpos
                 if action == 4:
                     self.pheromones += [Pheromone(agent.position)]
                 if agent.carrying and agent.position == self.home_position:
@@ -141,7 +138,6 @@ class Antworld:
                     agent.carrying = True
 
             rewards = np.array(rewards) + joint_reward
-
 
         # generate observations
 
@@ -157,7 +153,7 @@ class Antworld:
             if a.position[0] >= 0 and a.position[0] < self.dim_x and a.position[1] >= 0 and a.position[1] < self.dim_y:
                 world[a.position[0],a.position[1]] = 'p'
             else:
-            	a.age = 301
+                a.age = 301
         world[self.home_position] = 'H'
         world[self.food_position] = 'F'
 
@@ -189,14 +185,3 @@ class Antworld:
         self.food_position = food
 
         return True
-
-    def __generate_reward_function(self):
-        """
-        Reward function must have a randomness in it for 2, 2 position
-        50% of 0 and 50% of 14 (Paritially Stochastic Games)
-        :return:
-        """
-        self.reward = np.array([[11, -30, 0],
-                                [-30, 14, 6],
-                                [0,   0,  5]])
-

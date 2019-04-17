@@ -64,14 +64,13 @@ class HystereticAgent:
 
     def q_learn(self, prev_observation, prev_action, current_observation, reward):
 
-        if prev_observation not in self.q_table:
+        if prev_observation not in self.q_table.keys():
             self.q_table[prev_observation] = np.array([0 for _ in range(self.num_of_action)])
 
-        if current_observation not in self.q_table:
+        if current_observation not in self.q_table.keys():
             self.q_table[current_observation] = np.array([0 for _ in range(self.num_of_action)])
 
         q_p = self.q_table[prev_observation][prev_action]
-        print(q_p)
         pos_p = prev_observation
 
         #print(prev_observation,current_observation,self.q_table[current_observation])
