@@ -179,6 +179,8 @@ class Antworld:
                         else:
                             if world[x, y] != 'a':
                                 observation += world[x, y]
+                            elif (x, y) != ant.position:
+                                observation += '.'
                             elif ant.carrying and (x, y) == ant.position:
                                 observation += 'c'
                             
