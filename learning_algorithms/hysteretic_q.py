@@ -3,8 +3,8 @@ import numpy as np
 
 class HystereticAgent:
     def __init__(self, environment, agent_id,
-                 learning_rate=0.1, discount_factor=0.99, exploration_rate=1, 
-                 exploration_rate_decay=0.99,
+                 learning_rate=0.1, discount_factor=0.99, exploration_rate=0.01,
+                 exploration_rate_decay=1,
                  increasing_learning_rate=0.1, decreasing_learning_rate=0.01):
         self.environment = environment
         self.learning_rate = learning_rate
@@ -65,10 +65,10 @@ class HystereticAgent:
     def q_learn(self, prev_observation, prev_action, current_observation, reward):
 
         if prev_observation not in self.q_table.keys():
-            self.q_table[prev_observation] = np.array([0 for _ in range(self.num_of_action)])
+            self.q_table[prev_observation] = np.array([0 for _ in range(self.num_of_action)], dtype=np.float64)
 
         if current_observation not in self.q_table.keys():
-            self.q_table[current_observation] = np.array([0 for _ in range(self.num_of_action)])
+            self.q_table[current_observation] = np.array([0 for _ in range(self.num_of_action)], dtype=np.float64)
 
         q_p = self.q_table[prev_observation][prev_action]
         pos_p = prev_observation
@@ -85,17 +85,18 @@ class HystereticAgent:
 
         self.q_table[prev_observation][prev_action] = new_q
 
-
+        """
+        if reward != 0:
+            print(prev_observation, " ", prev_action, "   ", new_q, "   ", self.q_table[prev_observation])
+        """
 
     def index_to_actual(self, index):
         x = index % self.states_dim_y
         y = index // self.states_dim_x
 
-
     def actual_to_index(self, actual):
         index = actual[0] * self.states_dim_x + actual[1]
         return index
-
 
     def get_action(self):
         if np.random.randint(0, 100) / 100 < self.exploration_rate:
@@ -106,19 +107,20 @@ class HystereticAgent:
 
         return action
 
-
-    def get_action_from_observation(self,observation):
-
+    def get_action_from_observation(self, observation):
         if observation not in self.q_table:
-            self.q_table[observation] = np.array([0 for _ in range(self.num_of_action)])
+            self.q_table[observation] = np.array([0 for _ in range(self.num_of_action)], dtype=np.float64)
             return np.random.choice( range(self.num_of_action) )
 
-        if np.random.random_sample() < self.exploration_rate or np.sum(self.q_table[observation])==0:
+        if np.random.randint(0, 100) / 100 < self.exploration_rate:
             # Explore
             action = np.random.randint(0, self.num_of_action)
         else:
             action = np.argmax(self.q_table[observation])
-        self.exploration_rate *= self.exploration_rate_decay
+            # print("action: ", action, "  ", np.max(self.q_table[observation]))
+
+        # Start to decay when an agent starts to learn?
+        self.exploration_rate = self.exploration_rate * self.exploration_rate_decay
 
         return action
 

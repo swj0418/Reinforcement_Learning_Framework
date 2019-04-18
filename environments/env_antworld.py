@@ -56,7 +56,7 @@ class Antworld:
         self.agents_n = agents_n
         self.observation = Observation()
         self.reward = {}
-        self.max_pheromone_age = 20
+        self.max_pheromone_age = 3
 
         self.dim_x = dim_x
         self.dim_y = dim_y
@@ -74,7 +74,11 @@ class Antworld:
 
         for a in self.ants:
             if a.position[0] >= 0 and a.position[0] < self.dim_x and a.position[1] >= 0 and a.position[1] < self.dim_y:
-                worldDisplay[a.position[0],a.position[1]] = 'a'
+                if a.carrying:
+                    worldDisplay[a.position[0], a.position[1]] = 'c'
+                else:
+                    worldDisplay[a.position[0], a.position[1]] = 'a'
+
         for a in self.pheromones:
             if a.position[0] >= 0 and a.position[0] < self.dim_x and a.position[1] >= 0 and a.position[1] < self.dim_y:
                 worldDisplay[a.position[0],a.position[1]] = 'p'
@@ -93,11 +97,11 @@ class Antworld:
         anty = np.zeros((self.dim_x,self.dim_y))
         for a in self.pheromones:
             if a.position[0] >= 0 and a.position[0] < self.dim_x and a.position[1] >= 0 and a.position[1] < self.dim_y:
-                phero[a.position[0],a.position[1]] = 1
+                phero[a.position[0], a.position[1]] = 1
 
         for a in self.ants:
             if a.position[0] >= 0 and a.position[0] < self.dim_x and a.position[1] >= 0 and a.position[1] < self.dim_y:
-                anty[a.position[0],a.position[1]] = 1
+                anty[a.position[0], a.position[1]] = 1
 
         return phero, anty
 
@@ -132,12 +136,17 @@ class Antworld:
                     self.pheromones += [Pheromone(agent.position)]
                 if agent.carrying and agent.position == self.home_position:
                     agent.carrying = False
-                    joint_reward += 1
-                    rewards[num] += 1 #give the bringer the best reward
+                    joint_reward += 10
+                    rewards[num] += 10 #give the bringer the best reward
                 elif agent.position == self.food_position:
                     agent.carrying = True
 
+                # Movement penalty
+                rewards[num] -= 1
+
             rewards = np.array(rewards) + joint_reward
+
+
 
         # generate observations
 
@@ -148,19 +157,19 @@ class Antworld:
 
         for a in self.ants:
             if a.position[0] >= 0 and a.position[0] < self.dim_x and a.position[1] >= 0 and a.position[1] < self.dim_y:
-                world[a.position[0],a.position[1]] = 'a'
+                world[a.position[0], a.position[1]] = 'a'
         for a in self.pheromones:
             if a.position[0] >= 0 and a.position[0] < self.dim_x and a.position[1] >= 0 and a.position[1] < self.dim_y:
-                world[a.position[0],a.position[1]] = 'p'
+                world[a.position[0], a.position[1]] = 'p'
             else:
                 a.age = 301
+
         world[self.home_position] = 'H'
         world[self.food_position] = 'F'
 
-
         for ant in self.ants:
             observation = ''
-            for y in range(ant.position[1]-1,ant.position[1]+2):
+            for y in range(ant.position[1] - 1, ant.position[1] + 2):
                 if y < 0 or y >= self.dim_y:
                     observation += '...'
                 else:
@@ -168,18 +177,17 @@ class Antworld:
                         if x < 0 or x >= self.dim_x:
                             observation += '.'
                         else:
-                            if world[x,y] != 'a':
-                                observation += world[x,y]
-                            elif ant.carrying and (x,y) == ant.position:
+                            if world[x, y] != 'a':
+                                observation += world[x, y]
+                            elif ant.carrying and (x, y) == ant.position:
                                 observation += 'c'
                             
-            observations += [observation,]
-
+            observations += [observation, ]
 
         return observations, rewards, done, valid
 
-    def reset(self,food=(3,3)):
-        self.ants = [Ant(x,self.home_position) for x in range(self.agents_n)]
+    def reset(self, food=(3, 3)):
+        self.ants = [Ant(x, self.home_position) for x in range(self.agents_n)]
         self.pheromones = []
 
         self.food_position = food
