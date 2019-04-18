@@ -50,13 +50,13 @@ class Pheromone:
         self.age = 0
 
 class Antworld:
-    def __init__(self,dim_x=10, dim_y=10, agents_n=2, food=(3,3)):
+    def __init__(self,dim_x=10, dim_y=10, agents_n=2, food=(3,3), max_pheromone_age=30):
         self.actions = Action()
         self.states = States(dim_x=dim_x, dim_y=dim_y, agents_n=agents_n)
         self.agents_n = agents_n
         self.observation = Observation()
         self.reward = {}
-        self.max_pheromone_age = 3
+        self.max_pheromone_age = max_pheromone_age
 
         self.dim_x = dim_x
         self.dim_y = dim_y
