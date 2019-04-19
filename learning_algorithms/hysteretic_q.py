@@ -99,7 +99,7 @@ class HystereticAgent:
         return index
 
     def get_action(self):
-        if np.random.randint(0, 100) / 100 < self.exploration_rate:
+        if np.random.random_sample() < self.exploration_rate:
             # Explore
             action = np.random.randint(0, self.num_of_action)
         else:
@@ -108,11 +108,14 @@ class HystereticAgent:
         return action
 
     def get_action_from_observation(self, observation):
-        if observation not in self.q_table:
+        if observation not in self.q_table.keys():
             self.q_table[observation] = np.array([0 for _ in range(self.num_of_action)], dtype=np.float64)
-            return np.random.choice( range(self.num_of_action) )
+            return np.random.randint(0, self.num_of_action)
 
-        if np.random.randint(0, 100) / 100 < self.exploration_rate:
+        if np.sum(self.q_table[observation]) == 0:
+            return np.random.randint(0, self.num_of_action)
+
+        if np.random.random_sample() < self.exploration_rate:
             # Explore
             action = np.random.randint(0, self.num_of_action)
         else:
