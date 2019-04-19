@@ -8,22 +8,20 @@ from environments.env_antworld import Antworld
 
 from learning_algorithms.hysteretic_q import HystereticAgent
 
-
-
 if __name__ == '__main__':
     env = None
-    epochs = 500
+    epochs = 1000
     simulations = 1
     epoch_length = 10000
-    num_agents = 1
+    num_agents = 2
     rewards_1 = []
     individual_run_rewards = []
     averaged_rewards = []
 
     for simulation in range(simulations):
         food_position = (7, 8)
-        env = Antworld(dim_x=10, dim_y=10, agents_n=1, food=food_position)
-        agents = [HystereticAgent(env, this_id, exploration_rate=0.01, exploration_rate_decay=1) for this_id in range(num_agents)]
+        env = Antworld(dim_x=10, dim_y=10, agents_n=num_agents, food=food_position)
+        agents = [HystereticAgent(env, this_id, exploration_rate=0.01, exploration_rate_decay=0.999999) for this_id in range(num_agents)]
 
         # get initial observations/rewards
         observations, rewards, _, _ = env.step([],[x for x in range(num_agents)])
@@ -50,8 +48,9 @@ if __name__ == '__main__':
                                               observations[agent_num],
                                               rewards[agent_num])
 
+
             print("Epoch: ", epoch, "   Accumulative Rewards: ", sum_rewards, " Averaged Rewards: ", sum_rewards / epoch_length,
-                  "     ", (total_sum_rewards / epoch_length) / (epoch + 1))
+                  "     ", (total_sum_rewards / epoch_length) / (epoch + 1), " Exploration Rate: ", agents[0].exploration_rate)
             # print(len(agents[0].q_table.keys()))
             # print(agents[0].exploration_rate)
 
@@ -60,5 +59,5 @@ if __name__ == '__main__':
             individual_run_rewards.append(sum_rewards / epoch_length)
             averaged_rewards.append((total_sum_rewards / epoch_length) / (epoch + 1))
 
-    plt.plot(individual_run_rewards)
+    plt.plot(averaged_rewards)
     plt.show()
