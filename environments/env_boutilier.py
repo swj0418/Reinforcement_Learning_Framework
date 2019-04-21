@@ -17,18 +17,18 @@ class Observation:
         pass
 
 
-class Boutilier(ReinforcementLearningEnvironment):
+class Boutilier():
     def __init__(self):
-        ReinforcementLearningEnvironment.__init__(self)
         self.action = Action()
+        self.state = 0
 
         self.reward = {}
-        self.k = -100
+        self.k = -3
 
         # Sets up a reward function
         self.__generate_reward_function()
 
-    def step(self, action):
+    def step(self, actions):
         """
         Take an action given by the policy and give evaluative feedback.
 
@@ -44,26 +44,42 @@ class Boutilier(ReinforcementLearningEnvironment):
         done = False
         val = None
 
-        # Converts action index into a concrete action that is in an action space
-        concrete_action = self.actions[action]
+        if self.state == 0:
+            if actions[0] == 0:
+                self.state = 1
+                reward = self.reward[self.state]
+            else:
+                self.state = 2
+                reward = self.reward[self.state]
+        elif self.state == 1:
+            if actions[0] == actions[1]:
+                self.state = 3
+                reward = self.reward[self.state] # 11
+                done = True
+            else:
+                self.state = 4
+                reward = self.reward[self.state]
+                done = True
+        elif self.state == 2:
+            self.state = 5
+            reward = self.reward[self.state]
+            done = True
 
-        # Bound check for grid world
+        observation = self.state
 
-
-
-        pass
+        return observation, reward, done, val
 
     def reset(self):
-
+        self.state = 0
         return True
 
     def is_out_of_bound(self, concrete_action):
         pass
 
     def __generate_reward_function(self):
-        self.reward[1] = 0 # S1
+        self.reward[0] = 0 # S1
+        self.reward[1] = 0
         self.reward[2] = 0
-        self.reward[3] = 0
-        self.reward[4] = 11
-        self.reward[5] = self.k
-        self.reward[6] = 7
+        self.reward[3] = 11
+        self.reward[4] = self.k
+        self.reward[5] = 7

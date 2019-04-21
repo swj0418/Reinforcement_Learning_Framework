@@ -10,7 +10,7 @@ from learning_algorithms.hysteretic_q import HystereticAgent
 
 if __name__ == '__main__':
     env = None
-    epochs = 1000
+    epochs = 3000
     simulations = 1
     epoch_length = 10000
     num_agents = 2

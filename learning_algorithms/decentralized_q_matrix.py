@@ -1,15 +1,16 @@
 import numpy as np
+import math
 
 class Agent:
     def __init__(self):
-        self.q_table = np.zeros(shape=(3, ))
+        self.q_table = np.zeros(shape=(3, ), dtype=np.float64)
         self.rewards = []
         self.averaged_rewards = []
         self.total_rewards = 0
 
         self.action_cursor = 1
 
-class HystereticAgentMatrix:
+class DecentralizedAgentMatrix:
     def __init__(self, environment, increasing_learning_rate=0.9, decreasing_learning_rate=0.1,
                  discount_factor=0.9, exploration_rate=0.01):
         self.environment = environment
@@ -30,6 +31,9 @@ class HystereticAgentMatrix:
             self.agents.append(Agent())
         self.steps = 1
 
+        # Tau -- Temperature Value
+        self.t = -0.01
+
     def step(self):
         actions = []
         for agent in self.agents:
@@ -45,12 +49,12 @@ class HystereticAgentMatrix:
             obs, reward, done, valid = self.environment.step(action=actions, agent_id=0)
 
             # Update Q-table
-            bellman_value = reward + self.discount_factor * (np.max(agent.q_table[agent.action_cursor]) - q_p)
-
-            if bellman_value >= 0:
-                new_q = q_p + self.increasing_learning_rate * bellman_value
-            else:
-                new_q = q_p + self.decreasing_learning_rate * bellman_value
+            sum_Q = 0
+            single_Q = 0
+            single_Q = math.exp(agent.q_table[agent.action_cursor] / self.t)
+            for u in agent.q_table:
+                sum_Q = math.exp(u / self.t)
+            new_q = single_Q / sum_Q
 
             agent.q_table[agent.action_cursor] = new_q
             # self.exploration_rate = self.exploration_rate / self.steps
@@ -58,8 +62,7 @@ class HystereticAgentMatrix:
             agent.total_rewards += reward
             agent.rewards.append(reward)
 
-            if self.steps > 1:
-                agent.averaged_rewards.append(agent.total_rewards / (self.steps + 5))
+            agent.averaged_rewards.append(agent.total_rewards / (self.steps + 5))
 
         self.steps += 1
 

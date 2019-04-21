@@ -1,21 +1,17 @@
 '''
-testing hysteretic_q learning on the climbing game.
+testing decentralized_q learning on the climbing game.
 '''
+
 from matplotlib import pyplot as plt
 import numpy as np
 
 from environments.env_climbling import Climbing
-from learning_algorithms.hysteretic_q_matrix import HystereticAgentMatrix
+from learning_algorithms.decentralized_q_matrix import DecentralizedAgentMatrix
 
-episodes = 5000
-epochs = 300
-exp_rate = 0.5
+episodes = 1000
+epochs = 1000
+exp_rate = 0.01
 exp_rate_decay = 0.999
-
-def moving_average(a, n=20) :
-    ret = np.cumsum(a, dtype=float)
-    ret[n:] = ret[n:] - ret[:-n]
-    return ret[n - 1:] / n
 
 def run_episode(agent):
     for i in range(epochs):
@@ -29,29 +25,21 @@ def run_episode(agent):
     avgrewards_1 = np.asarray(avgrewards_1)
     avgrewards_2 = np.asarray(avgrewards_2)
 
-    reward_1_moving_average = moving_average(reward_1)
-    """
-    plt.plot(avgrewards_1)
-    plt.title('Climbing game, average reward')
-    plt.ylabel('average_reward')
-    plt.xlabel('episode')
-    plt.show()
-    """
-    return reward_1
+    return (avgrewards_1 + avgrewards_2) / 2
 
 
 if __name__ == "__main__":
     env = Climbing()
-    agent = HystereticAgentMatrix(environment=env, exploration_rate=exp_rate)
+    agent = DecentralizedAgentMatrix(environment=env, exploration_rate=exp_rate)
 
     overall = np.zeros(shape=(epochs, ))
     for episode in range(episodes):
-        overall += run_episode(agent)
+        r = run_episode(agent)
+
+        overall = np.add(overall, r)
+
         print("Episode ", episode)
-        exp_rate = exp_rate * exp_rate_decay
-        agent.set_exploration_rate(exp_rate)
         agent.reset_reward()
-        print(exp_rate)
 
     plt.plot(overall / episodes)
     plt.xlabel("Epochs")
